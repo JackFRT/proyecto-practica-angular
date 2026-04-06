@@ -1,0 +1,26 @@
+Proyecto de Prácticas en Angular
+
+Se logró migrar de PHP hacia Angular el proyecto web de las prácticas. Se clonaron la mayoría de las funciones de la versión actual para convertirlas en una aplicación de página moderna, reactiva y estructurada en componentes.
+
+Usamos json-server para poder recrear el funcionamiento real del proyecto con una base de datos simulada. Si lo hacíamos solo de manera estática y local, no se podrían apreciar las operaciones CRUD reales que tiene el sistema (descuento de stock, registro de reservas, creación de cupones, etc.).
+
+Credenciales a usar
+
+Para probar los distintos paneles, restricciones y permisos, puedes usar estas cuentas precargadas en la base de datos:
+
+Administrador (Gestión de Usuarios):
+- Email: jackramos@gmail.com
+- Password: 123
+
+Cliente Regular (Para probar Carrito, Perfil y Ruleta):
+- Email: nelly@gmail.com
+- Password: 123
+
+Para poder usarlo:
+
+Para levantar el proyecto y la base de datos:
+
+1. Tener instalado node.js
+2. Instalar dependencias de Angular:bash y npm
+3. Tener instalado json-server (npm install -g json-server)
+4. Para levantar la base de datos en una segunda terminal (json-server --watch src/db.json --port 3000)

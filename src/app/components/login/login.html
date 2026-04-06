@@ -1,0 +1,66 @@
+<div style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(rgba(40, 25, 15, 0.8), rgba(20, 30, 20, 0.9)), url('images/img_random/museo.jpg'); background-size: cover; background-position: center; position: relative;">
+
+    <a routerLink="/galeria" class="btn-volver" style="position: absolute; top: 20px; left: 20px; color: var(--crema-suave); text-decoration: none; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; transition: color 0.3s ease;">
+        <i class="fas fa-arrow-left"></i> Volver a la Tienda
+    </a>
+
+    <div class="glass-card login-box" style="width: 100%; max-width: 400px; text-align: center; padding: 40px 30px;">
+        
+        @if (!modoRegistro) {
+            <div class="login-logo" style="font-size: 3rem; color: var(--terracota); margin-bottom: 15px; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));">
+                <i class="fas fa-seedling"></i>
+            </div>
+            <h2 class="login-title" style="color: var(--crema-suave); margin-bottom: 30px; font-size: 1.8rem;">Acceso al Museo</h2>
+        } @else {
+            <div class="login-logo" style="font-size: 3rem; color: var(--verde-oliva); margin-bottom: 15px; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));">
+                <i class="fas fa-leaf"></i>
+            </div>
+            <h2 class="login-title" style="color: var(--crema-suave); margin-bottom: 30px; font-size: 1.8rem;">Únete al Museo</h2>
+        }
+
+        @if (error) {
+            <div class="mensaje-error" style="background: rgba(214, 90, 49, 0.2); color: #ff8a66; padding: 10px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--terracota); text-align: left;">
+                <i class="fas fa-exclamation-triangle"></i> {{ error }}
+            </div>
+        }
+        @if (exito) {
+            <div class="mensaje-exito" style="background: rgba(163, 177, 138, 0.2); color: #c4d6a4; padding: 10px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--verde-oliva); text-align: left;">
+                <i class="fas fa-check-circle"></i> {{ exito }}
+            </div>
+        }
+
+        <form (ngSubmit)="procesarFormulario()">
+            
+            @if (modoRegistro) {
+                <div class="form-group" style="margin-bottom: 20px; text-align: left;">
+                    <label for="nombre" style="color: var(--arena-clara); display: block; margin-bottom: 8px; font-weight: 600;">Nombre o Apodo</label>
+                    <input type="text" id="nombre" name="nombre" [(ngModel)]="nombre" placeholder="Ej: CactusFan99" style="width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid var(--cafe-tierra); background: rgba(255, 255, 255, 0.9); font-family: var(--fuente-principal); font-size: 1rem; color: #333;" required>
+                </div>
+            }
+
+            <div class="form-group" style="margin-bottom: 20px; text-align: left;">
+                <label for="email" style="color: var(--arena-clara); display: block; margin-bottom: 8px; font-weight: 600;">Correo Electrónico</label>
+                <input type="email" id="email" name="email" [(ngModel)]="email" placeholder="tu@correo.com" style="width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid var(--cafe-tierra); background: rgba(255, 255, 255, 0.9); font-family: var(--fuente-principal); font-size: 1rem; color: #333;" required>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px; text-align: left;">
+                <label for="password" style="color: var(--arena-clara); display: block; margin-bottom: 8px; font-weight: 600;">Contraseña</label>
+                <input type="password" id="password" name="password" [(ngModel)]="password" [placeholder]="modoRegistro ? 'Crea una contraseña segura' : '••••••••'" style="width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid var(--cafe-tierra); background: rgba(255, 255, 255, 0.9); font-family: var(--fuente-principal); font-size: 1rem; color: #333;" required>
+            </div>
+
+            @if (!modoRegistro) {
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px; font-size: 1.2rem; padding: 15px; background: var(--terracota); border: none; border-radius: 10px; color: white; cursor: pointer; font-weight: bold; transition: transform 0.3s;">
+                    Ingresar <i class="fas fa-sign-in-alt"></i>
+                </button>
+            } @else {
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px; font-size: 1.2rem; padding: 15px; background-color: var(--verde-pino); border: 2px solid var(--verde-oscuro); border-radius: 10px; color: white; cursor: pointer; font-weight: bold; transition: transform 0.3s;">
+                    Registrarme <i class="fas fa-user-plus"></i>
+                </button>
+            }
+        </form>
+
+        <a href="#" (click)="toggleModo($event)" class="enlace-registro" style="display: block; margin-top: 25px; color: var(--cafe-leche); text-decoration: none; transition: color 0.3s ease; font-weight: 500;">
+            {{ modoRegistro ? '¿Ya tienes cuenta? Inicia sesión aquí' : '¿No tienes cuenta? Regístrate aquí' }}
+        </a>
+    </div>
+</div>

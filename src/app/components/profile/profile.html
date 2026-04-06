@@ -1,0 +1,140 @@
+<div style="background-color: var(--crema-suave); min-height: 100vh; padding-bottom: 40px;">
+
+    <header class="main-header" style="padding: 15px 5%; box-shadow: none; border-bottom: 2px solid var(--cafe-oscuro);">
+        <div class="logo-area">
+            <h1>Cactus Museum</h1>
+        </div>
+        <div class="header-right">
+            <a routerLink="/galeria" class="btn-secondary" style="border-color: var(--crema-suave); color: var(--crema-suave);"><i class="fas fa-store"></i> Tienda</a>
+            <button (click)="cerrarSesion()" class="btn-secondary" style="border-color: var(--terracota); color: var(--terracota); cursor: pointer;">Salir</button>
+        </div>
+    </header>
+
+    <div class="perfil-layout mt-8">
+        
+        <aside class="perfil-sidebar">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="width: 80px; height: 80px; background: var(--verde-oliva); color: white; font-size: 2.5rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; margin: 0 auto 10px;">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3 style="color: var(--verde-pino);">{{ usuario.nombre }}</h3>
+                <p style="font-size: 0.85rem; color: var(--cafe-tierra);"><i class="fas fa-star"></i> Visitas presenciales: {{ usuario.visitas_presenciales || 0 }}</p>
+            </div>
+
+            <button class="perfil-nav-btn" [ngClass]="{'active': pestanaActiva === 'info'}" (click)="cambiarPestana('info')"><i class="fas fa-id-card"></i> Mi Información</button>
+            <button class="perfil-nav-btn" [ngClass]="{'active': pestanaActiva === 'reservas'}" (click)="cambiarPestana('reservas')"><i class="fas fa-shopping-basket"></i> Mis Compras</button>
+            <button class="perfil-nav-btn" [ngClass]="{'active': pestanaActiva === 'cupones'}" (click)="cambiarPestana('cupones')"><i class="fas fa-ticket-alt"></i> Mis Premios</button>
+            <button class="perfil-nav-btn" [ngClass]="{'active': pestanaActiva === 'peligro'}" (click)="cambiarPestana('peligro')" style="color: #ff6b6b; margin-top: 30px;"><i class="fas fa-exclamation-triangle"></i> Zona de Peligro</button>
+        </aside>
+
+        <main>
+            @if (mensaje) {
+                <div class="alerta mb-4" [ngClass]="tipoMensaje === 'exito' ? 'exito' : 'error'" style="padding: 10px; border-radius: 5px; color: white;" [style.backgroundColor]="tipoMensaje === 'exito' ? 'var(--verde-oliva)' : '#ff6b6b'">
+                    {{ mensaje }}
+                </div>
+            }
+
+            @if (pestanaActiva === 'info') {
+                <section class="perfil-content-section active">
+                    <h2 style="color: var(--verde-pino); border-bottom: 2px solid var(--cafe-leche); padding-bottom: 10px; margin-bottom: 20px;">Configuración de Cuenta</h2>
+                    
+                    <form (ngSubmit)="actualizarPerfil()" style="max-width: 500px;">
+                        <div class="form-group">
+                            <label>Nombre Completo</label>
+                            <input type="text" [(ngModel)]="usuario.nombre" name="nombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Correo Electrónico</label>
+                            <input type="email" [(ngModel)]="usuario.correo" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Nueva Contraseña <small style="font-weight: normal; color: gray;">(Opcional)</small></label>
+                            <input type="password" [(ngModel)]="usuario.password" name="password" placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-primary" style="background: var(--verde-oscuro); margin-top: 10px;"><i class="fas fa-save"></i> Guardar Cambios</button>
+                    </form>
+                </section>
+            }
+
+            @if (pestanaActiva === 'reservas') {
+                <section class="perfil-content-section active">
+                    <h2 style="color: var(--verde-pino); border-bottom: 2px solid var(--cafe-leche); padding-bottom: 10px; margin-bottom: 20px;">Historial de Compras</h2>
+                    
+                    @if (historial.length === 0) {
+                        <div style="text-align: center; padding: 40px 0; color: var(--cafe-tierra);">
+                            <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                            <p>Aún no has adoptado ningún cactus.</p>
+                            <a routerLink="/galeria" class="btn-primary" style="margin-top: 15px; display: inline-block;"><i class="fas fa-store"></i> Ir a la Tienda</a>
+                        </div>
+                    } @else {
+                        <div class="historial-grid">
+                            @for (reserva of historial; track reserva.id) {
+                                <div class="reserva-item bg-white p-4 rounded-lg shadow border border-[#EADDCD] flex gap-4 mb-4">
+                                    <div class="w-20 h-20 bg-gray-100 rounded-md flex items-center justify-center text-gray-400">
+                                        <i class="fas fa-seedling text-2xl"></i>
+                                    </div>
+                                    <div>
+                                        <h4 style="color: var(--cafe-oscuro); margin-bottom: 5px; font-size: 1.1rem;">{{ reserva.producto_nombre }} <span style="color: var(--terracota);">(x{{ reserva.cantidad }})</span></h4>
+                                        <p style="font-size: 0.9rem; color: gray;"><strong>Orden #{{ reserva.id }}</strong></p>
+                                        <p style="font-weight: bold; color: var(--verde-pino); margin-top: 5px;">Total: S/ {{ reserva.total_pagado }}</p>
+                                        
+                                        @if (reserva.estado === 'pendiente') { <span class="estado-badge text-orange-500 font-bold text-sm mt-2 block"><i class="fas fa-clock"></i> Pendiente de Recojo</span> }
+                                        @if (reserva.estado === 'recogido') { <span class="estado-badge text-green-600 font-bold text-sm mt-2 block"><i class="fas fa-check"></i> Entregado</span> }
+                                        @if (reserva.estado === 'cancelado') { <span class="estado-badge text-red-500 font-bold text-sm mt-2 block"><i class="fas fa-times"></i> Cancelado</span> }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </section>
+            }
+
+            @if (pestanaActiva === 'cupones') {
+                <section class="perfil-content-section active">
+                    <div class="fidelidad-progress-container bg-white p-6 rounded-lg border border-[#D4BFA5] mb-8">
+                        <h3 style="color: var(--cafe-oscuro);"><i class="fas fa-seedling" style="color: var(--verde-oliva);"></i> Tu Progreso de Coleccionista</h3>
+                        <p style="color: var(--cafe-tierra); font-size: 0.9rem; margin-top: 5px;">Adopta 4 cactus y obtén un código de regalo exclusivo.</p>
+                        
+                        <div class="progress-bar-bg bg-gray-200 h-4 rounded-full mt-4 overflow-hidden">
+                            <div class="progress-bar-fill bg-[#A3B18A] h-full transition-all duration-500" [style.width.%]="porcentajeProgreso"></div>
+                        </div>
+                        <p class="mt-2 text-center" style="font-weight: bold; color: var(--verde-pino);">{{ plantasAcumuladas }} de 4 plantas</p>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--cafe-leche); padding-bottom: 10px; margin-bottom: 20px;">
+                        <h2 style="color: var(--verde-pino);">Tus Premios Activos</h2>
+                        <a routerLink="/ruleta" class="btn-primary" style="font-size: 0.85rem; padding: 8px 15px;"><i class="fas fa-dharmachakra"></i> Ir a la Ruleta</a>
+                    </div>
+
+                    @if (cuponesActivos.length === 0) {
+                        <p style="color: var(--cafe-tierra); text-align: center; padding: 20px 0;">No tienes cupones disponibles. ¡Aprovecha tus giros en la ruleta!</p>
+                    } @else {
+                        <div class="cupones-grid grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @for (cupon of cuponesActivos; track cupon.id) {
+                                <div class="cupon-ticket bg-[#A3B18A] text-white p-6 rounded-xl relative overflow-hidden shadow-lg">
+                                    <h3 style="margin-bottom: 5px; font-size: 1.1rem; text-transform: uppercase; font-weight: bold;">Ticket de Descuento</h3>
+                                    <p style="font-size: 0.9rem; opacity: 0.9;">Preséntalo en tu próxima adopción</p>
+                                    <div class="cupon-codigo bg-white/20 px-4 py-2 rounded font-mono tracking-widest mt-4 inline-block">{{ cupon.codigo }}</div>
+                                    <h2 style="font-size: 2.8rem; margin: 10px 0; font-weight: 800;">{{ cupon.dcto }}% OFF</h2>
+                                </div>
+                            }
+                        </div>
+                    }
+                </section>
+            }
+
+            @if (pestanaActiva === 'peligro') {
+                <section class="perfil-content-section active">
+                    <h2 style="color: #ff6b6b; border-bottom: 2px solid rgba(255, 107, 107, 0.3); padding-bottom: 10px; margin-bottom: 20px;">Zona Restringida</h2>
+                    <div class="danger-zone border-2 border-dashed border-red-300 p-6 rounded-xl bg-red-50">
+                        <h3 style="color: var(--cafe-oscuro); margin-bottom: 10px; font-weight: bold;">Eliminar mi cuenta permanentemente</h3>
+                        <p style="color: var(--cafe-tierra); margin-bottom: 20px;">Una vez que elimines tu cuenta, perderás todos tus premios activos, tu barra de progreso y tu historial de compras para siempre.</p>
+                        <button (click)="eliminarCuenta()" class="btn-primary" style="background: #ff6b6b; border-color: #ff6b6b;">
+                            <i class="fas fa-trash-alt"></i> Eliminar mi cuenta
+                        </button>
+                    </div>
+                </section>
+            }
+        </main>
+    </div>
+</div>

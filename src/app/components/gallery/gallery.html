@@ -1,0 +1,288 @@
+<header class="main-header">
+    <div class="logo-area">
+        <h1>Cactus Museum - Ayacucho - Perú</h1>
+    </div>
+    
+    <div class="header-right">
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-tiktok"></i></a>
+        </div>
+
+        @if (!isLoggedIn) {
+            <div class="auth-area" style="margin: 0 15px;">
+                <a routerLink="/login" class="btn-login-header glass-effect">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </a>
+            </div>
+        }
+        
+        <div class="cactus-cool-container">
+            <div class="moka-mini-status" title="¡Haz clic para hablar con el jefe!">
+                <img src="images/mascota_cactus/mascota.jpg" alt="Cactus Cool" id="header-mascot" class="img-header-moka interactive-header">
+            </div>
+        </div>
+    </div>
+</header>
+
+<section id="hero-section" class="top-layout hero-dark-bg hero-centrado">
+    <div class="description-column">
+        <span class="tagline">Tradición en Ayacucho</span>
+        <h2>Un Oasis de<br>Espinas y Café</h2>
+        <p>Explora la colección botánica más diversa de la región mientras disfrutas de un grano de altura especial.</p>
+        
+        <div class="hero-btns">
+            <a href="https://cafeayacuchano.com/" target="_blank" class="btn-primary btn-cafeteria" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+                <span class="btn-text">Visitar Cafetería</span>
+                <img src="images/museo/logo_cafeteria.png" alt="Logo" class="btn-hover-icon">
+            </a>
+            
+            <button class="btn-secondary" (click)="toggleMapa()">
+                <i class="fas fa-map-marker-alt"></i> Ubícanos
+            </button>
+        </div>
+    </div>
+
+    @if (mostrarMapa) {
+        <div class="map-column" id="mapa-contenedor">
+            <div class="glass-card map-glass-card">
+                <div class="card-header">
+                    <h3>Dirección del Museo</h3>
+                </div>
+                <div class="map-wrapper">
+                    <img src="images/img_random/direccion_cafeteria.png" alt="Ubicación Museo" class="img-fit">
+                    <div class="map-overlay">
+                        <span>Jr. San Cristóbal, Ayacucho</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</section>
+
+<main class="bottom-layout">
+   <aside class="sidebar-interaction">
+        
+        <div class="ruleta-container" (click)="abrirRuletaModal()" style="cursor: pointer;">
+            <div class="ruleta-badge">¡Nuevo!</div>
+            <div class="ruleta-visual-trigger"><i class="fas fa-dharmachakra"></i></div>
+            <h4>Ruleta Semanal</h4>
+            <p>Gira y gana descuentos</p>
+        </div>
+
+        <div class="moka-interaction-box">
+            <div class="chat-container">
+                <div id="bubble" class="chat-bubble" [ngClass]="burbujaClaseAnimacion">
+                    {{ mokaMensaje }}
+                </div>
+            </div>
+            <div class="moka-avatar-wrapper">
+                <img [src]="mokaImagen" 
+                    alt="Moka Anime" 
+                    id="moka-img" 
+                    class="moka-main-img max-h-52 object-contain" 
+                    [ngClass]="mokaClaseAnimacion"
+                    (click)="interactuarMoka()">
+            </div>
+            <p class="moka-subtext">Diálogos de la barista virtual</p>
+        </div>
+    </aside>
+
+    <section class="stock-section">
+        <div class="inventory-header">
+            <h3>Stock de Productos</h3>
+            <span class="stock-subtitle">Envíos a toda la ciudad vía Delivery</span>
+        </div>
+
+        <div class="catalog-carousel">
+            <button class="carousel-btn prev-btn"><i class="fas fa-chevron-left"></i></button>
+
+            <div class="carousel-viewport">
+                <div class="carousel-track" id="product-track">
+                    <div class="product-page">
+                        
+                        @if (productos.length > 0) {
+                            @for (producto of productos; track producto.id) {
+                                <article class="product-card" (click)="abrirDetalles(producto)">
+                                    @if (producto.precio > 40) {
+                                        <div class="product-badge rare">Premium</div>
+                                    }
+                                    <div class="product-img-container">
+                                        @if (producto.imagen_url) {
+                                            <img [src]="producto.imagen_url" [alt]="producto.nombre" class="img-fit-product">
+                                        } @else {
+                                            <i class="fas fa-seedling"></i>
+                                        }
+                                    </div>
+                                    <div class="product-details">
+                                        <h4>{{ producto.nombre }}</h4>
+                                        <span class="product-price">S/ {{ producto.precio }}</span>
+                                    </div>
+                                </article>
+                            }
+                        } @else {
+                            <p style="color: var(--cafe-tierra); padding: 20px; text-align:center; width: 100%;">
+                                No hay cactus disponibles en este momento. ¡Moka está regándolos!
+                            </p>
+                        }
+
+                    </div> 
+                </div>
+            </div>
+
+            <button class="carousel-btn next-btn"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </section>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-shipping"><p><i class="fas fa-box"></i> Envíos a toda la ciudad vía <strong>Delivery</strong>.</p></div>
+    
+    <div class="footer-contact">
+        <button class="btn-contacto-toggle" (click)="toggleContacto()">
+            <i class="fas fa-address-book"></i> Información de Contacto <i class="fas fa-chevron-down" [ngClass]="{'fa-chevron-up': mostrarContacto}"></i>
+        </button>
+        
+        @if (mostrarContacto) {
+            <div id="contacto-info" class="contacto-desplegable" style="display: block;">
+                <p><i class="fas fa-envelope"></i> hola@cactusmuseum.com</p>
+                <p><i class="fas fa-phone-alt"></i> +51 999 888 777</p>
+                <p><i class="fas fa-map-marker-alt"></i> Jr. San Cristóbal, Ayacucho, Perú</p>
+            </div>
+        }
+    </div>
+
+    @if (rolUsuario === 'admin' || rolUsuario === 'empleado') {
+        <div class="footer-admin-nav">
+            <h4 style="color: var(--crema-suave); margin-bottom: 10px;"><i class="fas fa-id-badge"></i> Accesos de Personal</h4>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                
+                @if (rolUsuario === 'admin') {
+                    <a routerLink="/admin" class="btn-secondary" style="padding: 5px 15px; font-size: 0.9rem;"><i class="fas fa-chess-king"></i> Panel Admin</a>
+                }
+                
+                <a routerLink="/empleado" class="btn-secondary" style="padding: 5px 15px; font-size: 0.9rem;"><i class="fas fa-boxes"></i> Dashboard Empleado</a>
+            </div>
+        </div>
+    }
+
+    <div class="footer-bottom" style="margin-top: 20px;"><p>&copy; 2026 Todos los derechos reservados.</p></div>
+</footer>
+
+@if (isLoggedIn) {
+    <div class="floating-menu-container">
+        
+        <div id="profile-dropdown" class="profile-dropdown glass-card" [ngClass]="{'active': mostrarMenuPerfil}">
+            <div class="dropdown-header">
+                <span>Hola, <strong>{{ nombreUsuario }}</strong></span>
+            </div>
+            <div class="dropdown-links">
+                <a routerLink="/perfil"><i class="fas fa-id-card"></i> Mi Perfil Completo</a>
+                <a routerLink="/perfil"><i class="fas fa-history"></i> Historial de Reservas</a>
+                <a routerLink="/perfil"><i class="fas fa-gift"></i> Premios de Ruleta</a>
+            </div>
+            <div class="dropdown-settings">
+                <div class="setting-item">
+                    <span><i class="fas fa-volume-up"></i> Voz de Moka</span>
+                    <label class="switch">
+                        <input type="checkbox" [(ngModel)]="mokaVozActiva" (change)="toggleMokaVoz()">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+            <a href="javascript:void(0)" (click)="cerrarSesion()" class="dropdown-logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+        </div>
+
+        <button class="floating-profile-btn" (click)="toggleMenuPerfil()" title="Mi Cuenta">
+            <i class="fas fa-user-circle"></i>
+        </button>
+    </div>
+}
+
+@if (productoSeleccionado) {
+  <div class="modal-overlay" style="display: flex;">
+    <div class="modal-content glass-card producto-modal-layout" style="max-width: 900px; width: 90%; position: relative;">
+      <button class="close-modal" (click)="cerrarModal()" style="top: 15px; right: 20px; color: var(--terracota); font-size: 2rem; position: absolute;">&times;</button>
+      
+      <div class="producto-galeria">
+        <div class="imagen-principal-container bg-[#F4EBE1] border-2 border-[#D4BFA5] rounded-xl overflow-hidden h-[350px]">
+          <img [src]="imagenPrincipalModal" [alt]="productoSeleccionado.nombre" class="w-full h-full object-contain">
+        </div>
+        <div class="carrusel-miniaturas mt-4 flex gap-2 overflow-x-auto">
+          <img [src]="productoSeleccionado.imagen_url" 
+               (click)="cambiarImagenModal(productoSeleccionado.imagen_url)" 
+               class="miniatura w-[70px] h-[70px] object-cover rounded-lg cursor-pointer border-2 border-transparent hover:border-[#D65A31] transition-all opacity-70 hover:opacity-100">
+        </div>
+      </div>
+      
+      <div class="producto-info-texto flex flex-col h-full text-white">
+        <h2 class="producto-titulo text-3xl font-bold text-[#D65A31] mb-2 leading-tight">{{ productoSeleccionado.nombre }}</h2>
+        <div class="producto-precio-badge self-start bg-[#A3B18A] text-white px-4 py-1 rounded-full text-xl font-bold mb-6">
+          S/ {{ productoSeleccionado.precio }}
+        </div>
+        
+        <div class="info-scroll-area flex-grow overflow-y-auto pr-2 space-y-4 mb-6">
+          <div class="info-bloque bg-black/20 p-4 rounded-xl border-l-4 border-[#BC8A5F]">
+            <h3 class="text-[#A3B18A] font-bold text-lg mb-2 flex items-center gap-2"><i class="fas fa-seedling"></i> Guía de Cuidados</h3>
+            <p class="text-sm text-gray-200 whitespace-pre-line">{{ productoSeleccionado.cuidados || 'Necesita luz indirecta y poco riego.' }}</p>
+          </div>
+          <div class="info-bloque bg-black/20 p-4 rounded-xl border-l-4 border-[#BC8A5F]">
+            <h3 class="text-[#A3B18A] font-bold text-lg mb-2 flex items-center gap-2"><i class="fas fa-microscope"></i> Detalles Técnicos</h3>
+            <p class="text-sm text-gray-200 whitespace-pre-line">{{ productoSeleccionado.detalles_tecnicos || 'Suculenta resistente de clima árido.' }}</p>
+          </div>
+        </div>
+        
+        <button (click)="comprarCactus()" class="btn-primary w-full py-4 text-lg bg-[#D65A31] hover:bg-[#b84b26] font-bold rounded-xl mt-auto shadow-lg transition transform hover:-translate-y-1">
+          <i class="fas fa-shopping-bag"></i> Pagar y Reservar (Stock: {{ productoSeleccionado.stock || 2 }})
+        </button>
+      </div>
+      
+    </div>
+  </div>
+}
+
+@if (mostrarModalRuleta) {
+    <div class="modal-overlay" style="display: flex; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000;">
+        <div class="modal-content ruleta-card-layout" style="background: var(--arena-clara); border-radius: 20px; overflow: hidden; width: 90%; max-width: 800px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+            
+            <div class="ruleta-header-title" style="background: var(--terracota); color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="margin: 0; font-size: 1.5rem; font-weight: bold;">RULETA SEMANAL - CACTUS MUSEUM</h2>
+                <button class="close-modal" (click)="cerrarRuletaModal()" style="background: none; border: none; color: white; font-size: 2rem; cursor: pointer;">&times;</button>
+            </div>
+
+            <div class="ruleta-body" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 40px;">
+                
+                <div class="ruleta-moka-side" style="text-align: center; position: relative;">
+                    <div class="moka-speech-bubble" style="background: white; border: 2px solid var(--cafe-leche); padding: 15px; border-radius: 15px; position: relative; font-weight: bold; color: var(--cafe-oscuro); margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                        {{ mokaRuletaMensaje }}
+                        <div style="position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: var(--cafe-leche) transparent transparent transparent;"></div>
+                    </div>
+                    <img [src]="mokaRuletaImagen" alt="Moka" style="height: 250px; cursor: pointer; transition: transform 0.2s;" (click)="interactuarMokaRuleta()" title="¡Hazme clic!">
+                </div>
+
+                <div class="ruleta-wheel-side" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <p style="font-weight: bold; color: var(--cafe-tierra); margin-bottom: 20px;">¡HAZ CLIC EN LA RUEDA PARA GIRAR!</p>
+                    
+                    <div class="wheel-wrapper" (click)="girarRuleta()" style="position: relative; width: 300px; height: 300px; cursor: pointer;">
+                        <div class="wheel-pointer-left" style="position: absolute; top: 50%; left: -20px; transform: translateY(-50%); color: var(--terracota); font-size: 3rem; z-index: 10;"><i class="fas fa-caret-right"></i></div>
+                        
+                        <div id="wheel" style="width: 100%; height: 100%; border-radius: 50%; border: 5px solid white; box-shadow: 0 0 15px rgba(0,0,0,0.2); position: relative; overflow: hidden; transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99);" [style.background]="estiloFondoRuleta" [style.transform]="'rotate(' + rotacionAcumulada + 'deg)'">
+                            <div id="wheel-text-overlay" style="position: absolute; top:0; left:0; width:100%; height:100%;">
+                                @for (etiqueta of etiquetasRuleta; track $index) {
+                                    <div class="slice-container" style="position: absolute; top: 50%; left: 50%; width: 50%; height: 2px; transform-origin: left center;" [style.transform]="etiqueta.transformPadre">
+                                        <div class="slice-text" style="position: absolute; right: 20px; color: var(--cafe-oscuro); font-weight: bold; font-size: 0.85rem; text-align: right;" [style.transform]="etiqueta.transformHijo" [innerHTML]="etiqueta.titulo"></div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="wheel-stats" style="margin-top: 30px; background: white; padding: 15px 25px; border-radius: 10px; border: 2px dashed var(--cafe-leche); width: 100%; text-align: center;">
+                        <p style="font-weight: bold; font-size: 1.1rem; color: var(--cafe-oscuro);">RESULTADO: <span [style.color]="colorMensajeRuleta" [innerHTML]="ultimoPremioHTML"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,130 @@
+{
+  "productos": [
+    {
+      "id": "1",
+      "nombre": "California Sunset / Suculenta Rosada",
+      "precio": 20,
+      "stock": 2,
+      "imagen_url": "images/cactus/ex1_1773709292_672.jpg",
+      "categoria": "Suculentas",
+      "cuidados": "- Necesita luz",
+      "detalles": "Roseta compacta"
+    },
+    {
+      "id": "2",
+      "nombre": "Biznaga pequeña / Mamillaria",
+      "precio": 30,
+      "stock": 19,
+      "imagen_url": "images/cactus/main_1773879023_979.jpg",
+      "categoria": "Opuntias",
+      "cuidados": "- Poco riego",
+      "detalles": "Espinas pequeñas"
+    }
+  ],
+  "reservas": [
+    {
+      "id": "1",
+      "cliente": "Nelly",
+      "producto_nombre": "Biznaga pequeña",
+      "cantidad": 1,
+      "total_pagado": 30,
+      "tipo_comprobante": "boleta",
+      "comprobante_img": "pago.jpg",
+      "estado": "cancelado",
+      "atendido_por": "1"
+    },
+    {
+      "id_usuario": "1",
+      "cliente": "Jack",
+      "producto_nombre": "Biznaga pequeña / Mamillaria",
+      "cantidad": 1,
+      "total_pagado": 30,
+      "codigo_cupon": "",
+      "tipo_comprobante": "boleta",
+      "dni_opcional": "",
+      "comprobante_img": "pago.jpg",
+      "estado": "cancelado",
+      "fecha_reserva": "2026-04-05T04:23:39.751Z",
+      "recompensa_procesada": false,
+      "id": "ad-LAubYkGw",
+      "atendido_por": "1"
+    },
+    {
+      "id_usuario": "1",
+      "cliente": "Jack",
+      "producto_nombre": "Biznaga pequeña / Mamillaria",
+      "cantidad": 1,
+      "total_pagado": 30,
+      "codigo_cupon": "",
+      "tipo_comprobante": "boleta",
+      "dni_opcional": "",
+      "comprobante_img": "pago.jpg",
+      "estado": "cancelado",
+      "fecha_reserva": "2026-04-05T04:23:42.105Z",
+      "recompensa_procesada": false,
+      "id": "zJ5GV6bb8hM",
+      "atendido_por": "1"
+    }
+  ],
+  "premios": [
+    {
+      "id": "1",
+      "titulo": "5% de descuento",
+      "prob": 10,
+      "color": "#A3B18A",
+      "probabilidad": 2,
+      "descuento_porcentaje": 5,
+      "color_seccion": "#8a9acc"
+    },
+    {
+      "id": "2",
+      "titulo": "Suerte para la próxima",
+      "prob": 85,
+      "color": "#D4BFA5",
+      "probabilidad": 90,
+      "descuento_porcentaje": 0,
+      "color_seccion": "#ff7575"
+    },
+    {
+      "descuento_porcentaje": 10,
+      "probabilidad": 1,
+      "color_seccion": "#A3B18A",
+      "titulo": "10% de descuento",
+      "id": "QCSdlkCUUSc"
+    },
+    {
+      "descuento_porcentaje": 10,
+      "probabilidad": 1,
+      "color_seccion": "#A3B18A",
+      "titulo": "10% de descuento",
+      "id": "n4N3pPjYHBc"
+    }
+  ],
+  "cupones": [
+    {
+      "id": "1",
+      "codigo": "ANIVERSARIO1",
+      "dcto": 20,
+      "usos": "0/10"
+    }
+  ],
+  "usuarios": [
+    {
+      "id": "1",
+      "nombre": "Jack",
+      "correo": "jackramos@gmail.com",
+      "password": "123",
+      "rol": "Admin",
+      "visitas": 1
+    },
+    {
+      "id": "2",
+      "nombre": "Nelly",
+      "correo": "nelly@gmail.com",
+      "password": "123",
+      "rol": "Cliente",
+      "visitas": 3
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

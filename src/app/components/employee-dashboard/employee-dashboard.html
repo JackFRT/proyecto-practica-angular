@@ -1,0 +1,309 @@
+<div style="background: var(--arena-clara); min-height: 100vh; padding-bottom: 40px;">
+
+    <header class="main-header" style="justify-content: space-between; padding: 15px 30px;">
+        <h2>Barra de atención | <span style="font-weight: 300;">Hola, {{ empleadoNombre }}</span></h2>
+        <div style="display: flex; gap: 15px;">
+            <a routerLink="/galeria" class="btn-secondary"><i class="fas fa-home"></i> Tienda</a>
+            <button (click)="cerrarSesion()" class="btn-secondary" style="border-color: var(--terracota); color: var(--terracota); cursor: pointer;"><i class="fas fa-door-open"></i> Salir</button>
+        </div>
+    </header>
+
+    <div class="dashboard-layout" style="display: grid; grid-template-columns: 250px 1fr; gap: 20px; padding: 20px;">
+        
+        <aside class="sidebar-menu" style="background: white; border-radius: 15px; padding: 20px; border: 2px solid var(--cafe-leche); height: fit-content; position: sticky; top: 20px;">
+            <button class="perfil-nav-btn" [ngClass]="{'active': pestanaActiva === 'ordenes'}" (click)="cambiarPestana('ordenes')">
+                Notificaciones 
+                @if (reservasPendientes.length > 0) {
+                    <span style="background: #ff4757; color: white; border-radius: 50%; padding: 2px 7px; font-size: 0.8rem; float: right; box-shadow: 0 0 5px red;">{{ reservasPendientes.length }}</span>
+                }
+            </button>
+            <button class="perfil-nav-btn" [ngClass]="{'active': pestanaActiva === 'inventario'}" (click)="cambiarPestana('inventario')">Inventario</button>
+            <button class="perfil-nav-btn" [ngClass]="{'active': pestanaActiva === 'fidelidad'}" (click)="cambiarPestana('fidelidad')">Fidelidad</button>
+            <button class="perfil-nav-btn" [ngClass]="{'active': pestanaActiva === 'marketing'}" (click)="cambiarPestana('marketing')">Marketing & Ruleta</button>
+            <button class="perfil-nav-btn" [ngClass]="{'active': pestanaActiva === 'perfil'}" (click)="cambiarPestana('perfil')">Mi Perfil</button>
+            
+            <div style="margin-top: 40px; text-align: center;">
+                <img src="images/mascota_cactus/mascota.jpg" alt="Jefe Cactus Cool" style="width: 100px; border-radius: 50%; border: 3px solid var(--cafe-tierra);">
+                <div style="background: var(--terracota); color: white; padding: 10px; border-radius: 10px; font-size: 0.85rem; margin-top: 10px; position: relative;">
+                    ¡El inventario no se mantiene solo. ¡A trabajar!
+                    <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); border-width: 0 10px 10px; border-style: solid; border-color: transparent transparent var(--terracota) transparent;"></div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="tab-container" style="background: white; border-radius: 15px; padding: 30px; border: 2px solid var(--cafe-leche); box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            
+            @if (mensaje) {
+                <div class="alerta" [ngClass]="tipoMensaje === 'exito' ? 'exito' : 'error'" style="margin-bottom: 20px; padding: 10px; border-radius: 8px; color: white;" [style.backgroundColor]="tipoMensaje === 'exito' ? 'var(--verde-oliva)' : '#ff6b6b'">
+                    {{ mensaje }}
+                </div>
+            }
+
+            @if (pestanaActiva === 'ordenes') {
+                <div class="tab-content active">
+                    <h2>Reservas Pendientes</h2><br>
+                    <div class="order-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                        
+                        @if (reservasPendientes.length === 0) {
+                            <p>Todo tranquilo por ahora. No hay órdenes pendientes.</p>
+                        } @else {
+                            @for (reserva of reservasPendientes; track reserva.id) {
+                                <div class="order-card" style="border: 1px solid var(--cafe-leche); padding: 15px; border-radius: 10px; border-left: 5px solid var(--terracota);">
+                                    <h3 style="color: var(--verde-pino); margin-bottom: 10px;">Reserva #{{ reserva.id }}</h3>
+                                    <p><strong>Cliente:</strong> {{ reserva.cliente }}</p>
+                                    <p><strong>Producto:</strong> {{ reserva.producto_nombre }} (x{{ reserva.cantidad }})</p>
+                                    <p><strong>Comprobante:</strong> {{ reserva.tipo_comprobante | titlecase }} {{ reserva.dni_opcional ? '('+reserva.dni_opcional+')' : '' }}</p>
+                                    
+                                    @if (reserva.comprobante_img) {
+                                        <button type="button" class="btn-secondary" style="width: 100%; margin-top: 10px; font-size: 0.9rem; border-color: var(--cafe-tierra); color: var(--cafe-tierra);" (click)="verComprobante(reserva.comprobante_img)">
+                                            <i class="fas fa-image"></i> Ver Captura de Pago
+                                        </button>
+                                    } @else {
+                                        <p style="color: var(--terracota); font-size: 0.85rem; margin-top: 10px; text-align: center;"><i class="fas fa-exclamation-triangle"></i> Sin captura adjunta</p>
+                                    }
+
+                                    <div style="display: flex; gap: 8px; margin-top: 15px;">
+                                        <button (click)="atenderReserva(reserva)" class="btn-primary" style="flex: 1; background: var(--verde-oscuro); padding: 10px;" title="Aprobar y Entregar"><i class="fas fa-check"></i></button>
+                                        <button (click)="cancelarReserva(reserva)" class="btn-secondary" style="flex: 1; border-color: var(--terracota); color: var(--terracota); padding: 10px;" title="Cancelar"><i class="fas fa-times"></i></button>
+                                        <button (click)="reportarUsuario(reserva)" class="btn-secondary" style="flex: 1; background: #ff6b6b; color: white; border: none; padding: 10px;" title="Reportar Falso"><i class="fas fa-ban"></i></button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (pestanaActiva === 'inventario') {
+                <div class="tab-content active">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2>Gestión de productos</h2>
+                        <button class="btn-primary" style="background: var(--verde-oscuro);" (click)="abrirModalCactus()"><i class="fas fa-plus"></i> Añadir producto</button>
+                    </div>
+
+                    <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                        <input type="text" [(ngModel)]="busquedaNombre" (ngModelChange)="filtrarInventario()" placeholder="🔍 Buscar por nombre..." style="padding: 10px; border-radius: 8px; border: 1px solid gray; flex: 1;">
+                        <select [(ngModel)]="busquedaCategoria" (ngModelChange)="filtrarInventario()" style="padding: 10px; border-radius: 8px; border: 1px solid gray;">
+                            <option value="todos">Todas las categorías</option>
+                            @for (cat of categorias; track cat) {
+                                <option [value]="cat">{{ cat }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <table class="admin-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <thead style="background: var(--verde-oliva); color: white;">
+                            <tr><th style="padding:10px;">Foto</th><th style="padding:10px;">Nombre</th><th style="padding:10px;">Categoría</th><th style="padding:10px;">Precio</th><th style="padding:10px;">Stock</th><th style="padding:10px;">Acciones</th></tr>
+                        </thead>
+                        <tbody>
+                            @for (item of inventarioFiltrado; track item.id) {
+                                <tr style="border-bottom: 1px solid #ddd;">
+                                    <td style="padding:10px;">
+                                        @if (item.imagen_url) { <img [src]="item.imagen_url" style="width: 50px; height: 50px; border-radius: 5px; object-fit: cover;"> }
+                                    </td>
+                                    <td style="padding:10px;">
+                                        <strong>{{ item.nombre }}</strong><br>
+                                        <small style="color: gray; font-style: italic;">{{ item.nombre_cientifico || '' }}</small>
+                                    </td>
+                                    <td style="padding:10px;"><span class="estado-badge" style="background: var(--crema-suave); color: var(--cafe-oscuro); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">{{ item.categoria || 'Otros' }}</span></td>
+                                    <td style="padding:10px;">S/ {{ item.precio }}</td>
+                                    <td style="padding:10px;"><span [style.color]="item.stock == 0 ? 'red' : 'inherit'" style="font-weight: bold;">{{ item.stock }}</span></td>
+                                    <td style="padding:10px;">
+                                        <div style="display: flex; gap: 8px;">
+                                            <button (click)="abrirModalCactus(item)" class="btn-circle" style="background: var(--terracota); color: white; width: 35px; height: 35px; border-radius: 50%; border: none; cursor: pointer;"><i class="fas fa-edit"></i></button>
+                                            <button (click)="eliminarProducto(item.id)" class="btn-circle" style="background: transparent; color: #ff6b6b; border: 1px solid #ff6b6b; width: 35px; height: 35px; border-radius: 50%; cursor: pointer;"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+            @if (pestanaActiva === 'fidelidad') {
+                <div class="tab-content active">
+                    <h2>Control de Fidelidad (El escaneo por QR se implementará próximamente)</h2><br>
+                    <div class="glass-card" style="max-width: 500px; padding: 20px; border: 1px solid var(--cafe-leche); border-radius: 10px;">
+                        <div class="form-group" style="position: relative; margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Correo del Cliente</label>
+                            <input type="text" [(ngModel)]="emailClienteBuscar" (ngModelChange)="buscarClienteTeclado()" placeholder="Escribe para buscar..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid gray;" autocomplete="off">
+                            
+                            @if (sugerenciasClientes.length > 0) {
+                                <div style="position: absolute; background: white; border: 1px solid #ccc; width: 100%; max-height: 150px; overflow-y: auto; z-index: 10; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-radius: 0 0 8px 8px;">
+                                    @for (sug of sugerenciasClientes; track sug.id) {
+                                        <div (click)="seleccionarCliente(sug.correo)" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #eee;">
+                                            {{ sug.correo }} - <strong>{{ sug.nombre }}</strong>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                        <button (click)="registrarVisita()" class="btn-primary" style="margin-top: 10px;">Registrar Visita Presencial</button>
+                    </div>
+                </div>
+            }
+
+            @if (pestanaActiva === 'marketing') {
+                <div class="tab-content active">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                        
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <h2><i class="fab fa-tiktok"></i> Cupones Públicos</h2>
+                                <button class="btn-primary" style="padding: 5px 10px; font-size: 0.9rem;" (click)="abrirModalCupon()"><i class="fas fa-plus"></i> Nuevo</button>
+                            </div>
+                            <table class="admin-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                                <thead style="background: var(--verde-oliva); color: white;"><tr><th style="padding:10px;">Código</th><th style="padding:10px;">Dcto</th><th style="padding:10px;">Usos</th><th style="padding:10px;">Acción</th></tr></thead>
+                                <tbody>
+                                    @for (cupon of cupones; track cupon.id) {
+                                        <tr style="border-bottom: 1px solid #ddd;">
+                                            <td style="padding:10px;"><strong>{{ cupon.codigo }}</strong></td>
+                                            <td style="padding:10px;">{{ cupon.dcto || cupon.descuento_porcentaje }}%</td>
+                                            <td style="padding:10px;">{{ cupon.usos_actuales || 0 }}/{{ cupon.limite_usos }}</td>
+                                            <td style="padding:10px;">
+                                                <button (click)="eliminarCupon(cupon.id)" class="btn-circle" style="background: transparent; color: #ff6b6b; border: 1px solid #ff6b6b; width: 30px; height: 30px; border-radius: 50%; cursor: pointer;"><i class="fas fa-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <h2><i class="fas fa-dharmachakra"></i> Ruleta</h2>
+                                <button class="btn-primary" style="padding: 5px 10px; font-size: 0.9rem;" (click)="abrirModalRuleta()"><i class="fas fa-plus"></i> Nuevo Premio</button>
+                            </div>
+                            <table class="admin-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                                <thead style="background: var(--verde-oliva); color: white;"><tr><th style="padding:10px;">Color</th><th style="padding:10px;">Premio</th><th style="padding:10px;">Prob.</th><th style="padding:10px;">Acciones</th></tr></thead>
+                                <tbody>
+                                    @for (premio of premios; track premio.id) {
+                                        <tr style="border-bottom: 1px solid #ddd;">
+                                            <td style="padding:10px;"><div style="width: 25px; height: 25px; border-radius: 50%; border: 2px solid var(--cafe-leche);" [style.backgroundColor]="premio.color_seccion || premio.color"></div></td>
+                                            <td style="padding:10px;">{{ premio.titulo }}</td>
+                                            <td style="padding:10px;"><strong>{{ premio.probabilidad }}%</strong></td>
+                                            <td style="padding:10px;">
+                                                <div style="display: flex; gap: 8px;">
+                                                    <button (click)="abrirModalRuleta(premio)" class="btn-circle" style="background: var(--terracota); color: white; width: 30px; height: 30px; border-radius: 50%; border: none; cursor: pointer;"><i class="fas fa-edit"></i></button>
+                                                    <button (click)="eliminarPremio(premio.id)" class="btn-circle" style="background: transparent; color: #ff6b6b; border: 1px solid #ff6b6b; width: 30px; height: 30px; border-radius: 50%; cursor: pointer;"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            <div style="text-align: right; margin-top: 10px; font-weight: bold;" [style.color]="probabilidadTotal === 100 ? 'var(--verde-oscuro)' : 'var(--terracota)'">
+                                Probabilidad Total: {{ probabilidadTotal }}%
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            }
+
+            @if (pestanaActiva === 'perfil') {
+                <div class="tab-content active">
+                    <h2>Mi Rendimiento</h2><br>
+                    <div style="display: flex; gap: 20px;">
+                        <div class="glass-card" style="text-align: center; padding: 30px; flex: 1; border: 1px solid var(--cafe-leche); border-radius: 10px;">
+                            <i class="fas fa-box-open" style="font-size: 3rem; color: var(--verde-pino); margin-bottom: 10px;"></i>
+                            <h1 style="font-size: 3rem; color: var(--cafe-oscuro); margin: 0;">{{ ordenesAtendidas }}</h1>
+                            <p style="color: var(--cafe-tierra); font-weight: bold;">Órdenes Atendidas por ti</p>
+                        </div>
+                        <div class="glass-card" style="flex: 2; display: flex; align-items: center; justify-content: center; border: 1px solid var(--cafe-leche); border-radius: 10px;">
+                            <p style="color: gray; font-style: italic;">"El buen servicio es la raíz de un negocio fuerte." - Cactus Cool</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </main>
+    </div>
+</div>
+
+@if (modalComprobante) {
+    <div class="modal-overlay" style="display: flex; position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="admin-modal-content" style="background: white; border-radius: 15px; max-width: 500px; width: 90%; padding: 20px; position: relative; text-align: center;">
+            <button (click)="cerrarTodosModales()" style="color: var(--terracota); font-size: 2rem; position: absolute; top: 10px; right: 15px; background: none; border: none; cursor: pointer;">&times;</button>
+            <h2 style="color: var(--verde-pino); margin-bottom: 15px;">Captura de Pago</h2>
+            <div style="background: var(--arena-clara); padding: 10px; border-radius: 10px; border: 2px dashed var(--cafe-leche);">
+                <i class="fas fa-file-invoice-dollar text-6xl text-gray-400 mb-4 block mt-4"></i>
+                <p class="font-mono bg-white p-2 rounded border border-gray-300">{{ comprobanteActual }}</p>
+            </div>
+        </div>
+    </div>
+}
+
+@if (modalCactus) {
+    <div class="modal-overlay" style="display: flex; position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="admin-modal-content" style="background: white; border-radius: 15px; max-width: 750px; width: 90%; padding: 30px; position: relative; max-height: 90vh; overflow-y: auto;">
+            <button (click)="cerrarTodosModales()" style="color: var(--terracota); font-size: 2rem; position: absolute; top: 15px; right: 20px; background: none; border: none; cursor: pointer;">&times;</button>
+            <h2 style="color: var(--verde-pino); margin-bottom: 20px;">{{ productoActual.id ? 'Editar' : 'Añadir' }} Producto</h2>
+            
+            <form (ngSubmit)="guardarProducto()">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group"><label>Nombre Común *</label><input type="text" [(ngModel)]="productoActual.nombre" name="nombre" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;"></div>
+                    <div class="form-group"><label>Nombre Científico</label><input type="text" [(ngModel)]="productoActual.nombre_cientifico" name="ncientifico" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;"></div>
+                    
+                    <div class="form-group">
+                        <label>Categoría *</label>
+                        <select [(ngModel)]="productoActual.categoria" name="categoria" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;">
+                            @for (cat of categorias; track cat) { <option [value]="cat">{{ cat }}</option> }
+                        </select>
+                    </div>
+                    
+                    <div class="form-group"><label>Precio (S/) *</label><input type="number" step="0.1" [(ngModel)]="productoActual.precio" name="precio" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;"></div>
+                    <div class="form-group"><label>Stock *</label><input type="number" [(ngModel)]="productoActual.stock" name="stock" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;"></div>
+                    
+                    <div class="form-group" style="grid-column: span 2;"><label>Guía de Cuidados *</label><textarea [(ngModel)]="productoActual.cuidados" name="cuidados" rows="3" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;"></textarea></div>
+                    <div class="form-group" style="grid-column: span 2;"><label>Detalles Técnicos *</label><textarea [(ngModel)]="productoActual.detalles_tecnicos" name="detalles" rows="3" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;"></textarea></div>
+                    
+                    <div class="form-group" style="grid-column: span 2; border-top: 1px dashed var(--cafe-leche); padding-top: 15px;">
+                        <h4 style="color: var(--verde-oliva); margin-bottom: 10px;">URL de Imagen (Simulador API)</h4>
+                        <input type="text" [(ngModel)]="productoActual.imagen_url" name="img_url" placeholder="ej: images/cactus/nuevo.jpg" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;">
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 25px; background: var(--verde-oscuro); padding: 12px; border-radius: 8px; color: white; border: none; cursor: pointer; font-weight: bold;">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+}
+
+@if (modalCupon) {
+    <div class="modal-overlay" style="display: flex; position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="admin-modal-content" style="background: white; border-radius: 15px; max-width: 400px; width: 90%; padding: 30px; position: relative;">
+            <button (click)="cerrarTodosModales()" style="color: var(--terracota); font-size: 2rem; position: absolute; top: 10px; right: 15px; background: none; border: none; cursor: pointer;">&times;</button>
+            <h2 style="color: var(--verde-pino); margin-bottom: 15px;">Crear Cupón</h2>
+            <form (ngSubmit)="guardarCupon()">
+                <div class="form-group" style="margin-bottom: 10px;"><label style="display:block; margin-bottom:5px;">Código (Ej: TIKTOK20)</label><input type="text" [(ngModel)]="cuponActual.codigo" name="codigo" required style="width: 100%; padding: 8px; text-transform: uppercase; border: 1px solid #ccc; border-radius: 5px;"></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;">
+                    <div class="form-group"><label style="display:block; margin-bottom:5px;">% Descuento</label><input type="number" [(ngModel)]="cuponActual.dcto" name="dcto" min="1" max="99" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;"></div>
+                    <div class="form-group"><label style="display:block; margin-bottom:5px;">Límite de Usos</label><input type="number" [(ngModel)]="cuponActual.limite_usos" name="lim" min="1" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;"></div>
+                </div>
+                <div class="form-group" style="margin-bottom: 10px;"><label style="display:block; margin-bottom:5px;">Días de Validez</label><input type="number" [(ngModel)]="cuponActual.dias_validez" name="dias" min="1" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;"></div>
+                <button type="submit" class="btn-primary" style="width: 100%; background: var(--verde-oscuro); margin-top: 15px; padding: 12px; border-radius: 8px; color: white; border: none; cursor: pointer; font-weight: bold;">Generar Código</button>
+            </form>
+        </div>
+    </div>
+}
+
+@if (modalRuleta) {
+    <div class="modal-overlay" style="display: flex; position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="admin-modal-content" style="background: white; border-radius: 15px; max-width: 400px; width: 90%; padding: 30px; position: relative;">
+            <button (click)="cerrarTodosModales()" style="color: var(--terracota); font-size: 2rem; position: absolute; top: 10px; right: 15px; background: none; border: none; cursor: pointer;">&times;</button>
+            <h2 style="color: var(--verde-pino); margin-bottom: 15px;">{{ premioActual.id ? 'Editar' : 'Añadir' }} Premio</h2>
+            <form (ngSubmit)="guardarPremio()">
+                <div class="form-group" style="margin-bottom: 10px;"><label style="display:block; margin-bottom:5px; font-weight: bold; color: var(--cafe-oscuro)">Título del Premio</label><input type="text" [(ngModel)]="premioActual.titulo" name="titulo" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;"></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;">
+                    <div class="form-group"><label style="display:block; margin-bottom:5px; font-weight: bold; color: var(--cafe-oscuro)">% Descuento (0 = Nada)</label><input type="number" [(ngModel)]="premioActual.descuento_porcentaje" name="dcto" min="0" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;"></div>
+                    <div class="form-group"><label style="display:block; margin-bottom:5px; font-weight: bold; color: var(--cafe-oscuro)">Probabilidad (%)</label><input type="number" [(ngModel)]="premioActual.probabilidad" name="prob" min="1" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;"></div>
+                </div>
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label style="display:block; margin-bottom:5px; font-weight: bold; color: var(--cafe-oscuro)">Color de la Rebanada</label>
+                    <input type="color" [(ngModel)]="premioActual.color_seccion" name="color" style="width: 100%; height: 40px; cursor: pointer; border: none; padding:0;">
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; background: var(--verde-oscuro); margin-top: 15px; padding: 12px; border-radius: 8px; color: white; border: none; cursor: pointer; font-weight: bold;">Guardar Premio</button>
+            </form>
+        </div>
+    </div>
+}
